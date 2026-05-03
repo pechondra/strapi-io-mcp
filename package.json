@@ -1,0 +1,52 @@
+{
+  "name": "strapi-io-mcp",
+  "version": "1.0.0",
+  "description": "Local MCP server for Strapi v5 (REST API) — content management, file uploads, entries, components, i18n, draft/publish.",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "strapi-io-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc --watch",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "strapi",
+    "strapi-v5",
+    "headless-cms",
+    "model-context-protocol",
+    "claude",
+    "openai"
+  ],
+  "license": "MIT",
+  "author": "pechondra",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pechondra/strapi-io-mcp.git"
+  },
+  "homepage": "https://github.com/pechondra/strapi-io-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/pechondra/strapi-io-mcp/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "qs": "^6.13.0",
+    "undici": "^6.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "@types/qs": "^6.9.15",
+    "typescript": "^5.5.3"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ]
+}
