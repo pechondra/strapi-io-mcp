@@ -503,6 +503,22 @@ npm run dev   # tsc --watch
 
 ---
 
+## ☕ Podpořte projekt
+
+Tenhle MCP server vzniká a udržuje se ve volném čase. Pokud vám `strapi-io-mcp` ušetří pár hodin proklikávání ve Strapi adminu — káva dlouho vydrží a pomůže projektu růst.
+
+<div align="center">
+
+<a href="https://buymeacoffee.com/infofhv" target="_blank">
+  <img src="https://img.shields.io/badge/Kupte%20mi%20kávu-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" />
+</a>
+
+*Bez tlaku — ⭐ na repu mi taky udělá radost.*
+
+</div>
+
+---
+
 ## 📜 Licence
 
 [MIT](./LICENSE) © pechondra
