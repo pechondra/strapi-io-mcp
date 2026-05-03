@@ -1,50 +1,79 @@
-# strapi-io-mcp
+<div align="center">
 
-> 🇨🇿 **Czech version:** [README.cs.md](./README.cs.md)
+# 🚀 strapi-io-mcp
 
-A local **Model Context Protocol (MCP)** server for **Strapi v5** (tested against `5.43.x`, REST API). Full coverage of content, files, single types, i18n, draft/publish and users.
+**A local Model Context Protocol (MCP) server for Strapi v5**
 
-Works against any Strapi instance — **cloud or self-hosted** — configured via environment variables (`STRAPI_URL`, `STRAPI_API_TOKEN`).
+Bring your Strapi headless CMS into Claude, Cursor, Codex and ChatGPT.
 
----
+[![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
+[![Node 18+](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](https://nodejs.org/)
+[![Strapi v5](https://img.shields.io/badge/Strapi-v5.43.x-8E75FF.svg)](https://strapi.io/)
+[![MCP](https://img.shields.io/badge/MCP-1.x-orange.svg)](https://modelcontextprotocol.io/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6.svg)](https://www.typescriptlang.org/)
 
-## Contents
+[Features](#-features) · [Quick start](#-quick-start) · [Configuration](#-strapi-configuration) · [MCP clients](#-mcp-client-configuration) · [Tools](#-available-tools) · [Examples](#-usage-examples) · [Troubleshooting](#-troubleshooting)
 
-- [Features](#features)
-- [Installation](#installation)
-- [Strapi configuration](#strapi-configuration)
-- [MCP client configuration](#mcp-client-configuration)
-  - [Claude Desktop](#claude-desktop)
-  - [Claude Code (CLI)](#claude-code-cli)
-  - [Claude Code in IDE / Cursor](#claude-code-in-ide--cursor)
-  - [OpenAI Codex CLI](#openai-codex-cli)
-  - [ChatGPT (OpenAI)](#chatgpt-openai)
-- [Available tools](#available-tools)
-- [Usage examples](#usage-examples)
-- [Troubleshooting](#troubleshooting)
+🇨🇿 **Czech version:** [README.cs.md](./README.cs.md)
+
+</div>
 
 ---
 
-## Features
+## ✨ Features
 
-- **Content CRUD** for collection types and single types (Strapi v5 `documentId`).
-- **File uploads** — from a local path or base64; can be linked directly to an existing entry via `ref`/`refId`/`field`.
-- **Media library management** — list, delete, update metadata (alt text, caption…).
-- **Filters, populate, sort, pagination, fields** — full support for Strapi REST query parameters including the `LHS bracket` syntax (via `qs`).
-- **Draft & Publish** — `status=draft|published`, plus dedicated `publish`/`unpublish` tools.
-- **i18n** — `locale` parameter and a tool to list all configured locales.
-- **Authentication** — either an API token from the admin panel, or users-permissions JWT (login/register/me).
-- **Users-permissions** — list/create/update/delete users.
-- **Generic escape hatch** (`strapi_request`) — any REST endpoint (custom routes, content-type-builder, roles, plugin endpoints…).
-- **Self-hosted ready** — configurable base URL, timeout and authentication mode.
+| | |
+|---|---|
+| 🗂️ **Content CRUD** | Collection types and single types using Strapi v5 `documentId` |
+| 🖼️ **File uploads** | From local path or base64 — optionally attach to entries in one call |
+| 📦 **Media library** | List, fetch, delete, update metadata (alt text, caption…) |
+| 🔍 **Powerful queries** | Full Strapi REST query parameters — `filters`, `populate`, `sort`, `pagination`, `fields` |
+| 📰 **Draft & Publish** | `status=draft\|published`, plus dedicated `publish` / `unpublish` tools |
+| 🌍 **i18n** | `locale` parameter and a tool to list configured locales |
+| 🔐 **Auth** | API token **or** users-permissions JWT (login / register / me) |
+| 👥 **Users** | List / create / update / delete users via users-permissions |
+| 🛠️ **Escape hatch** | Generic `strapi_request` for custom routes and any other endpoint |
+| 🏠 **Self-hosted ready** | Configurable base URL, timeout and authentication mode |
+
+> **27 tools** across content, files, single types, i18n, draft/publish, users and meta endpoints.
 
 ---
 
-## Installation
+## ⚡ Quick start
 
-> Requires **Node.js ≥ 18** and `git`.
+```bash
+git clone https://github.com/pechondra/strapi-io-mcp.git
+cd strapi-io-mcp
+npm install && npm run build
+```
 
-### A) From GitHub — clone and build (recommended)
+Add to your MCP client (Claude Desktop, Claude Code, Cursor, Codex, ChatGPT — see [below](#-mcp-client-configuration)):
+
+```json
+{
+  "mcpServers": {
+    "strapi": {
+      "command": "node",
+      "args": ["/ABSOLUTE/PATH/strapi-io-mcp/dist/index.js"],
+      "env": {
+        "STRAPI_URL": "https://cms.mycompany.com",
+        "STRAPI_API_TOKEN": "<paste-token-here>"
+      }
+    }
+  }
+}
+```
+
+That's it. Restart your client and start asking your model to manage content.
+
+---
+
+## 📦 Installation
+
+> **Requires:** Node.js ≥ 18 and `git`.
+
+<details>
+<summary><b>A) Clone &amp; build (recommended)</b></summary>
 
 ```bash
 git clone https://github.com/pechondra/strapi-io-mcp.git
@@ -53,35 +82,39 @@ npm install
 npm run build
 ```
 
-The resulting binary is `./dist/index.js`. Get its absolute path with:
+The binary is `./dist/index.js`. Get its absolute path with:
 
 ```bash
 echo "$(pwd)/dist/index.js"
 ```
 
-You will paste this path into your MCP client configuration (see below).
+</details>
 
-### B) Global install straight from GitHub
+<details>
+<summary><b>B) Global install from GitHub</b></summary>
 
 ```bash
 npm install -g github:pechondra/strapi-io-mcp
 ```
 
-This installs the `strapi-io-mcp` command on your PATH (the `prepare` script in `package.json` automatically runs the build). In your MCP client configuration you can then use:
+This installs the `strapi-io-mcp` command on your `PATH` (the `prepare` script automatically builds TypeScript). In your MCP client config use:
 
 ```json
 { "command": "strapi-io-mcp", "args": [] }
 ```
 
-You can verify the binary location with `which strapi-io-mcp`.
+Verify with `which strapi-io-mcp`.
 
-### C) No-install via `npx`
+</details>
+
+<details>
+<summary><b>C) No-install via <code>npx</code></b></summary>
 
 ```bash
 npx -y github:pechondra/strapi-io-mcp
 ```
 
-And in the MCP client configuration:
+In your MCP client config:
 
 ```json
 {
@@ -90,9 +123,12 @@ And in the MCP client configuration:
 }
 ```
 
-> ⚠️ The first `npx` run from GitHub fetches and builds the package, which can take a moment. For production / repeated use prefer option A or B.
+> ⚠️ The first `npx` run from GitHub fetches and builds the package, which can take a moment. For repeated use prefer option A or B.
 
-### Updating
+</details>
+
+<details>
+<summary><b>Updating</b></summary>
 
 ```bash
 # option A (clone)
@@ -102,36 +138,42 @@ cd strapi-io-mcp && git pull && npm install && npm run build
 npm install -g github:pechondra/strapi-io-mcp
 ```
 
+</details>
+
 ---
 
-## Strapi configuration
+## 🔧 Strapi configuration
 
-The server reads the following environment variables. Set them in your MCP client config (see below) or via the shell.
+The server reads the following environment variables. Set them via your MCP client config (see below) or your shell.
 
 | Variable | Required | Default | Description |
-|---|---|---|---|
-| `STRAPI_URL` | yes | `http://localhost:1337` | Base URL of your Strapi instance, **with no trailing slash**. For self-hosted e.g. `https://cms.mycompany.com`. |
-| `STRAPI_API_TOKEN` | recommended | — | API token from the admin panel: **Settings → API Tokens → Create new**. Recommended type: `Full access` (for all operations) or `Custom` with selected permissions. |
-| `STRAPI_EMAIL` | optional | — | Email for users-permissions login (alternative to the API token). |
-| `STRAPI_PASSWORD` | optional | — | Password for users-permissions login. |
-| `STRAPI_TIMEOUT_MS` | optional | `30000` | HTTP timeout in milliseconds. |
+|---|:---:|---|---|
+| `STRAPI_URL` | ✅ | `http://localhost:1337` | Base URL of your Strapi instance, **no trailing slash**. Self-hosted e.g. `https://cms.mycompany.com`. |
+| `STRAPI_API_TOKEN` | 🟡 *recommended* | — | API token from the admin panel: **Settings → API Tokens → Create new**. |
+| `STRAPI_EMAIL` | ⚪ | — | Email for users-permissions login (alternative to API token). |
+| `STRAPI_PASSWORD` | ⚪ | — | Password for users-permissions login. |
+| `STRAPI_TIMEOUT_MS` | ⚪ | `30000` | HTTP timeout in milliseconds. |
 
-**Recommendation:** use `STRAPI_API_TOKEN`. Email/password login is better suited to testing or end-user scenarios.
+> 💡 **Recommendation:** prefer `STRAPI_API_TOKEN`. Email/password login is better suited to testing or end-user scenarios.
 
-> If your Strapi instance requires a **Custom API token**, remember to grant it permissions for `Upload`, `Users-Permissions`, `Content-Type-Builder` and every content type you want to work with. Without `Full access` a token will not, for example, reach `strapi_list_content_types`.
+> ⚠️ For a **Custom API token**, grant permissions for `Upload`, `Users-Permissions`, `Content-Type-Builder` and every content type you want to access. Without `Full access`, calls like `strapi_list_content_types` will fail.
 
 ---
 
-## MCP client configuration
+## 🔌 MCP client configuration
 
-The path to the binary in the examples below is `/ABSOLUTE/PATH/strapi-io-mcp/dist/index.js`. Replace it with your real path (run `pwd` inside the project).
+Replace `/ABSOLUTE/PATH/strapi-io-mcp/dist/index.js` with your real path (run `pwd` inside the cloned directory).
 
-### Claude Desktop
+<details>
+<summary><b>🤖 Claude Desktop</b></summary>
 
-Configuration file:
-- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
-- Linux: `~/.config/Claude/claude_desktop_config.json`
+Edit the configuration file:
+
+| OS | Path |
+|---|---|
+| macOS | `~/Library/Application Support/Claude/claude_desktop_config.json` |
+| Windows | `%APPDATA%\Claude\claude_desktop_config.json` |
+| Linux | `~/.config/Claude/claude_desktop_config.json` |
 
 ```json
 {
@@ -150,9 +192,12 @@ Configuration file:
 
 Restart Claude Desktop. The new `strapi` MCP source should appear in the chat.
 
-### Claude Code (CLI)
+</details>
 
-The simplest option is to add it through the CLI:
+<details>
+<summary><b>⌨️ Claude Code (CLI)</b></summary>
+
+Easiest — add via the CLI:
 
 ```bash
 claude mcp add strapi \
@@ -161,7 +206,7 @@ claude mcp add strapi \
   -- node /ABSOLUTE/PATH/strapi-io-mcp/dist/index.js
 ```
 
-Or edit `~/.claude.json` manually (under the `mcpServers` key):
+Or edit `~/.claude.json` manually under the `mcpServers` key:
 
 ```json
 {
@@ -180,9 +225,12 @@ Or edit `~/.claude.json` manually (under the `mcpServers` key):
 
 For **per-project** configuration, use `.mcp.json` at the project root (same format).
 
-### Claude Code in IDE / Cursor
+</details>
 
-The Cursor / VS Code Claude extension reads `.mcp.json` at the workspace root or `~/.cursor/mcp.json` (for Cursor):
+<details>
+<summary><b>💻 Claude Code in IDE / Cursor</b></summary>
+
+The Cursor / VS Code Claude extension reads `.mcp.json` at the workspace root or `~/.cursor/mcp.json` (Cursor):
 
 ```json
 {
@@ -199,9 +247,12 @@ The Cursor / VS Code Claude extension reads `.mcp.json` at the workspace root or
 }
 ```
 
-### OpenAI Codex CLI
+</details>
 
-The Codex CLI (`codex`) supports MCP servers via `~/.codex/config.toml`:
+<details>
+<summary><b>🧪 OpenAI Codex CLI</b></summary>
+
+Codex CLI (`codex`) supports MCP servers via `~/.codex/config.toml`:
 
 ```toml
 [mcp_servers.strapi]
@@ -215,95 +266,102 @@ STRAPI_API_TOKEN = "<paste-token-here>"
 
 You can then call any `strapi_*` tool inside a Codex session.
 
-### ChatGPT (OpenAI)
+</details>
 
-ChatGPT Desktop / Web offers two ways to wire up MCP:
+<details>
+<summary><b>💬 ChatGPT (OpenAI)</b></summary>
 
-**1) Local MCP via ChatGPT Desktop (macOS/Windows, Pro/Team/Enterprise)**
+ChatGPT Desktop / Web offers two ways to wire up MCP.
+
+**1) Local MCP via ChatGPT Desktop** *(macOS/Windows, Pro/Team/Enterprise)*
 
 Open **Settings → Connectors → Add MCP server** and fill in:
 
-- *Name*: `strapi`
-- *Command*: `node`
-- *Args*: `/ABSOLUTE/PATH/strapi-io-mcp/dist/index.js`
-- *Environment*:
-  - `STRAPI_URL` = `https://cms.mycompany.com`
-  - `STRAPI_API_TOKEN` = `<paste-token-here>`
+| Field | Value |
+|---|---|
+| Name | `strapi` |
+| Command | `node` |
+| Args | `/ABSOLUTE/PATH/strapi-io-mcp/dist/index.js` |
+| Env: `STRAPI_URL` | `https://cms.mycompany.com` |
+| Env: `STRAPI_API_TOKEN` | `<paste-token-here>` |
 
-Save, enable the server in the *Connectors* dialog and switch on **Developer mode** in the chat (this allows tool calls).
+Save, enable the server in *Connectors* and turn on **Developer mode** in the chat to allow tool calls.
 
-**2) Via Custom GPT / Actions (remote access)**
+**2) Custom GPT / Actions (remote access)**
 
-ChatGPT Custom GPTs natively call MCP servers over HTTP. To expose this server on the web, wrap it with `mcp-proxy` or `supergateway`:
+ChatGPT Custom GPTs call MCP servers natively over HTTP. To expose this server on the web, wrap it with `mcp-proxy` or `supergateway`:
 
 ```bash
 npx -y supergateway --stdio "node /ABSOLUTE/PATH/strapi-io-mcp/dist/index.js" --port 8787
 ```
 
-…and add an Action in your Custom GPT pointing at `https://<your-domain>:8787/sse`. (We recommend running this behind an HTTPS reverse proxy with proper authorisation — see the [supergateway docs](https://github.com/supercorp-ai/supergateway).)
+Then add an Action in your Custom GPT pointing at `https://<your-domain>:8787/sse`. We recommend running this behind an HTTPS reverse proxy with proper authorisation — see the [supergateway docs](https://github.com/supercorp-ai/supergateway).
+
+</details>
 
 ---
 
-## Available tools
+## 🧰 Available tools
 
-The server exposes **27 tools**. Each returns the raw JSON from Strapi (Strapi errors are surfaced as MCP error responses including the response body).
+The server exposes **27 tools**. Each returns the raw JSON from Strapi (errors are surfaced as MCP error responses including the response body).
 
-### Content — collection types
+### 📰 Collection types
 
-| Tool | Description |
-|---|---|
-| `strapi_list_entries` | `GET /api/:pluralApiId` — list entries with `filters`, `populate`, `sort`, `pagination`, `status`, `locale`, `fields`. |
-| `strapi_get_entry` | `GET /api/:pluralApiId/:documentId` — single entry. |
-| `strapi_create_entry` | `POST /api/:pluralApiId` — create an entry. Defaults to `published`; pass `status=draft` for a draft. |
-| `strapi_update_entry` | `PUT /api/:pluralApiId/:documentId` — partial update (relations: `connect`/`disconnect`/`set`). |
-| `strapi_delete_entry` | `DELETE /api/:pluralApiId/:documentId`. |
-| `strapi_publish_entry` | Publish a draft (PUT with `status=published`). |
-| `strapi_unpublish_entry` | Unpublish (PUT with `status=draft`). |
-| `strapi_count_entries` | Returns `pagination.total` for the given filter. |
+| Tool | Endpoint | Purpose |
+|---|---|---|
+| `strapi_list_entries` | `GET /api/:pluralApiId` | List entries with filters / populate / sort / pagination / status / locale / fields |
+| `strapi_get_entry` | `GET /api/:pluralApiId/:documentId` | Fetch a single entry |
+| `strapi_create_entry` | `POST /api/:pluralApiId` | Create an entry (`status=draft` for a draft) |
+| `strapi_update_entry` | `PUT /api/:pluralApiId/:documentId` | Partial update — supports relation `connect`/`disconnect`/`set` |
+| `strapi_delete_entry` | `DELETE /api/:pluralApiId/:documentId` | Delete an entry |
+| `strapi_publish_entry` | PUT with `status=published` | Publish a draft |
+| `strapi_unpublish_entry` | PUT with `status=draft` | Unpublish a published entry |
+| `strapi_count_entries` | `GET /api/:pluralApiId` | Returns `pagination.total` for a filter |
 
-### Content — single types
+### 📄 Single types
 
-| Tool | Description |
-|---|---|
-| `strapi_get_single_type` | `GET /api/:singularApiId`. |
-| `strapi_update_single_type` | `PUT /api/:singularApiId`. |
-| `strapi_delete_single_type` | `DELETE /api/:singularApiId`. |
+| Tool | Endpoint | Purpose |
+|---|---|---|
+| `strapi_get_single_type` | `GET /api/:singularApiId` | Fetch the single type entry |
+| `strapi_update_single_type` | `PUT /api/:singularApiId` | Update or create the single type entry |
+| `strapi_delete_single_type` | `DELETE /api/:singularApiId` | Delete the single type entry |
 
-### Files (Upload plugin)
+### 📁 Files (Upload plugin)
 
-| Tool | Description |
-|---|---|
-| `strapi_upload_file` | `POST /api/upload` — multipart upload from `filePath` or `fileBase64`. Optionally attaches to an entry via `ref`/`refId`/`field`. |
-| `strapi_list_files` | `GET /api/upload/files` — list files with filters. |
-| `strapi_get_file` | `GET /api/upload/files/:id`. |
-| `strapi_delete_file` | `DELETE /api/upload/files/:id`. |
-| `strapi_update_file_info` | `POST /api/upload?id=:id` — update `name`/`alternativeText`/`caption`. |
+| Tool | Endpoint | Purpose |
+|---|---|---|
+| `strapi_upload_file` | `POST /api/upload` | Multipart upload from `filePath` or `fileBase64` (optional `ref`/`refId`/`field`) |
+| `strapi_list_files` | `GET /api/upload/files` | List files with filters |
+| `strapi_get_file` | `GET /api/upload/files/:id` | Fetch a file by id |
+| `strapi_delete_file` | `DELETE /api/upload/files/:id` | Delete a file |
+| `strapi_update_file_info` | `POST /api/upload?id=:id` | Update `name` / `alternativeText` / `caption` |
 
-### Auth & users (users-permissions)
+### 👤 Users-permissions
 
-| Tool | Description |
-|---|---|
-| `strapi_login` | `POST /api/auth/local` — returns a JWT (cached for subsequent calls). |
-| `strapi_register` | `POST /api/auth/local/register`. |
-| `strapi_get_me` | `GET /api/users/me`. |
-| `strapi_list_users` | `GET /api/users`. |
-| `strapi_create_user` | `POST /api/users`. |
-| `strapi_update_user` | `PUT /api/users/:id`. |
-| `strapi_delete_user` | `DELETE /api/users/:id`. |
+| Tool | Endpoint | Purpose |
+|---|---|---|
+| `strapi_login` | `POST /api/auth/local` | Login — returns JWT (cached) |
+| `strapi_register` | `POST /api/auth/local/register` | Register a new user |
+| `strapi_get_me` | `GET /api/users/me` | Get the authenticated user |
+| `strapi_list_users` | `GET /api/users` | List users |
+| `strapi_create_user` | `POST /api/users` | Create user |
+| `strapi_update_user` | `PUT /api/users/:id` | Update user |
+| `strapi_delete_user` | `DELETE /api/users/:id` | Delete user |
 
-### Meta / introspection
+### 🌍 Meta / introspection
 
-| Tool | Description |
-|---|---|
-| `strapi_list_locales` | `GET /api/i18n/locales`. |
-| `strapi_list_content_types` | `GET /content-type-builder/content-types` (requires admin permissions). |
-| `strapi_request` | Generic REST escape hatch — `method`, `path`, `query`, `body`, `headers`. Use this for custom routes and anything else. |
+| Tool | Endpoint | Purpose |
+|---|---|---|
+| `strapi_list_locales` | `GET /api/i18n/locales` | List configured locales |
+| `strapi_list_content_types` | `GET /content-type-builder/content-types` | Content type schemas (admin permissions) |
+| `strapi_request` | *any* | Generic REST escape hatch — `method`, `path`, `query`, `body`, `headers` |
 
 ---
 
-## Usage examples
+## 💡 Usage examples
 
-### List published articles with filters and a populated cover image
+<details open>
+<summary><b>List published articles with filters and a populated cover</b></summary>
 
 ```json
 {
@@ -320,7 +378,10 @@ The server exposes **27 tools**. Each returns the raw JSON from Strapi (Strapi e
 }
 ```
 
-### Create an article as a draft
+</details>
+
+<details>
+<summary><b>Create an article as a draft</b></summary>
 
 ```json
 {
@@ -337,7 +398,10 @@ The server exposes **27 tools**. Each returns the raw JSON from Strapi (Strapi e
 }
 ```
 
-### Upload an image and attach it to an article
+</details>
+
+<details>
+<summary><b>Upload an image and attach it to an article</b></summary>
 
 Strapi v5 requires a **two-step** flow (uploading a file as part of entry creation is no longer supported):
 
@@ -363,7 +427,7 @@ Strapi v5 requires a **two-step** flow (uploading a file as part of entry creati
 }
 ```
 
-Alternative — upload with the relation in a single call (the entry must already exist):
+Alternatively — upload with the relation in a single call (the entry must already exist):
 
 ```json
 {
@@ -377,7 +441,10 @@ Alternative — upload with the relation in a single call (the entry must alread
 }
 ```
 
-### Connect / disconnect a relation
+</details>
+
+<details>
+<summary><b>Connect / disconnect a relation</b></summary>
 
 ```json
 {
@@ -392,7 +459,10 @@ Alternative — upload with the relation in a single call (the entry must alread
 }
 ```
 
-### Custom endpoint (escape hatch)
+</details>
+
+<details>
+<summary><b>Custom endpoint (escape hatch)</b></summary>
 
 ```json
 {
@@ -404,18 +474,41 @@ Alternative — upload with the relation in a single call (the entry must alread
 }
 ```
 
----
-
-## Troubleshooting
-
-- **`401 Unauthorized`** — the token is missing or lacks permissions. Check the Strapi admin panel under *Settings → API Tokens → Permissions*.
-- **`404 Not Found` for an existing content type** — are you using the correct `pluralApiId` (plural, kebab-case, e.g. `blog-posts`)?
-- **Upload fails with `413`** — Strapi has an upload size limit (`Settings → Media Library`). On self-hosted setups raise it in your reverse proxy / Strapi config.
-- **Filters seem to be ignored** — by default Strapi only honours filters on `find` endpoints. Custom controllers must opt in explicitly.
-- **The server fails to start in Claude Desktop** — check the log: macOS `~/Library/Logs/Claude/mcp*.log`. The most common issues are an incorrect absolute path or `node` missing from PATH.
+</details>
 
 ---
 
-## Licence
+## 🩺 Troubleshooting
 
-MIT
+| Symptom | Likely cause / fix |
+|---|---|
+| `401 Unauthorized` | Token missing or lacks permissions. Check **Settings → API Tokens → Permissions**. |
+| `404 Not Found` for an existing content type | Are you using the correct `pluralApiId` (plural, kebab-case, e.g. `blog-posts`)? |
+| Upload fails with `413` | Strapi has an upload size limit (**Settings → Media Library**). On self-hosted, raise it in the reverse proxy / Strapi config. |
+| Filters seem to be ignored | By default Strapi only honours filters on `find` endpoints. Custom controllers must opt in explicitly. |
+| Server fails to start in Claude Desktop | Check the log: macOS `~/Library/Logs/Claude/mcp*.log`. Most common: incorrect absolute path or `node` missing from `PATH`. |
+
+---
+
+## 🤝 Contributing
+
+Issues and pull requests welcome at [github.com/pechondra/strapi-io-mcp](https://github.com/pechondra/strapi-io-mcp).
+
+```bash
+git clone https://github.com/pechondra/strapi-io-mcp.git
+cd strapi-io-mcp
+npm install
+npm run dev   # tsc --watch
+```
+
+---
+
+## 📜 Licence
+
+[MIT](./LICENSE) © pechondra
+
+<div align="center">
+
+If this project helps you, consider starring it on [GitHub](https://github.com/pechondra/strapi-io-mcp) ⭐
+
+</div>
