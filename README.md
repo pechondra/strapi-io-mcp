@@ -39,6 +39,22 @@ Bring your Strapi headless CMS into Claude, Cursor, Codex and ChatGPT.
 
 ---
 
+## ☕ Support
+
+This project is built and maintained in spare time. If `strapi-io-mcp` saves you a few hours of clicking around the Strapi admin — a coffee goes a long way and keeps the updates coming.
+
+<div align="center">
+
+<a href="https://buymeacoffee.com/infofhv" target="_blank">
+  <img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" />
+</a>
+
+*No pressure — a ⭐ on the repo also makes my day.*
+
+</div>
+
+---
+
 ## ⚡ Quick start
 
 ```bash
@@ -500,22 +516,6 @@ cd strapi-io-mcp
 npm install
 npm run dev   # tsc --watch
 ```
-
----
-
-## ☕ Support
-
-This project is built and maintained in spare time. If `strapi-io-mcp` saves you a few hours of clicking around the Strapi admin — a coffee goes a long way and keeps the updates coming.
-
-<div align="center">
-
-<a href="https://buymeacoffee.com/infofhv" target="_blank">
-  <img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" />
-</a>
-
-*No pressure — a ⭐ on the repo also makes my day.*
-
-</div>
 
 ---
 
